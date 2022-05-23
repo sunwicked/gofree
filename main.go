@@ -8,6 +8,8 @@ import (
 	"os"
 )
 
+var jsonPath string
+
 func jsonHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodGet {
@@ -15,7 +17,7 @@ func jsonHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jsonFile, err := os.Open("../InputJson.json")
+	jsonFile, err := os.Open(jsonPath)
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	w.Header().Set("Content-Type", "application/json")
@@ -72,6 +74,10 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	fileServer := http.FileServer(http.Dir("./static"))
 
+	argsWithoutProg := os.Args[1:]
+	fmt.Println(argsWithoutProg[0])
+	jsonPath = argsWithoutProg[0]
+
 	http.Handle("/", fileServer)
 
 	http.HandleFunc("/form", formHandler)
@@ -81,7 +87,6 @@ func main() {
 
 	fmt.Printf("Server started at port 8080")
 
-	//err := http.ListenAndServeTLS(":443", "/Users/mind/go/src/gofree/server.crt", "/Users/mind/go/src/gofree/server.key", nil)
 	//if err != nil {
 	//	log.Fatal("ListenAndServe: ", err)
 	//}
